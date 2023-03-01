@@ -24,5 +24,65 @@
   "license": "MIT",
   "dependencies": {
     "dotenv-cli": "^7.0.0"
+  },
+  "release-it": {
+    "git": {
+      "changelog": "git fetch --all && git log --pretty=format:\"* %s (%h)\" `git describe --tags --abbrev=0`..HEAD",
+      "commitMessage": "v${version}"
+    },
+    "github": {
+      "release": true,
+      "releaseName": "v${version}",
+      "tokenRef": "GITHUB_TOKENS"
+    },
+    "npm": {
+      "publish": false
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "infile": "CHANGELOG.md",
+        "preset": {
+          "name": "conventionalcommits",
+          "types": [
+            {
+              "type": "feat",
+              "section": "### ✨ Features"
+            },
+            {
+              "type": "fix",
+              "section": "### 🐛 Bug Fixes"
+            },
+            {
+              "type": "chore",
+              "hidden": true
+            },
+            {
+              "type": "docs",
+              "hidden": true
+            },
+            {
+              "type": "style",
+              "hidden": true
+            },
+            {
+              "type": "refactor",
+              "hidden": true
+            },
+            {
+              "type": "perf",
+              "hidden": true
+            },
+            {
+              "type": "test",
+              "hidden": true
+            }
+          ],
+          "releaseCount": 1,
+          "outputUnreleased": true,
+          "whoCanContribute": "CONTRIBUTORS.md"
+        },
+        "contributors": true
+      }
+    }
   }
 }

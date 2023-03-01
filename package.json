@@ -33,7 +33,7 @@
     "github": {
       "release": true,
       "releaseName": "v${version}",
-      "tokenRef": "GITHUB_TOKENS"
+      "tokenRef": "GITHUB_TOKEN"
     },
     "npm": {
       "publish": false
@@ -46,11 +46,11 @@
           "types": [
             {
               "type": "feat",
-              "section": "### ✨ Features"
+              "section": "✨ Features"
             },
             {
               "type": "fix",
-              "section": "### 🐛 Bug Fixes"
+              "section": "🐛 Bug Fixes"
             },
             {
               "type": "chore",

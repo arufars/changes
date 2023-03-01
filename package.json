@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "release": "dotenv release-it --",
-    "relase:2": "set /p GITHUB_TOKEN=Enter your GitHub token: && set \"GITHUB_TOKEN=%GITHUB_TOKEN%\" && release-it",
+    "release:2": "set /p GITHUB_TOKEN=Enter your GitHub token: && set \"GITHUB_TOKEN=%GITHUB_TOKEN%\" && release-it",
     "commit": "cz",
     "release:beta": "dotenv release-it -- --preRelease=beta",
     "prepare": "husky install",
@@ -21,5 +21,8 @@
     "url": "git+https://github.com/arufars/changes.git"
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "dotenv-cli": "^7.0.0"
+  }
 }

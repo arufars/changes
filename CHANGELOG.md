@@ -1,5 +1,12 @@
 
 
+### [0.1.1](https://github.com/arufars/changes/compare/0.1.0...0.1.1) (2023-03-01)
+
+
+### 🐛 Bug Fixes
+
+* **README:** replace the wrong translate message ([4351c86](https://github.com/arufars/changes/commit/4351c867ef47142b072d2a63dbd4a49b5409a3af))
+
 ## 0.1.0 (2023-03-01)
 
 

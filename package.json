@@ -1,0 +1,24 @@
+{
+  "name": "changes",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "release": "dotenv release-it --",
+    "commit": "cz",
+    "release:beta": "dotenv release-it -- --preRelease=beta",
+    "prepare": "husky install",
+    "prettier": "prettier --write ."
+  },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/cz-commitlint"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arufars/changes.git"
+  },
+  "author": "",
+  "license": "MIT"
+}

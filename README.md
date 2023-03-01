@@ -12,7 +12,7 @@ Commitlint and Commitizen are tools used to ensure that commits are made accordi
 
 ### Commitlint
 
-Anda dapat menginstal Commitlint dengan menjalankan perintah berikut:
+You can install Commitlint by running the following command:
 
 ```bash
 npm install --save-dev @commitlint/config-conventional @commitlint/cli
@@ -20,7 +20,7 @@ npm install --save-dev @commitlint/config-conventional @commitlint/cli
 
 ### Commitizen
 
-Anda dapat menginstal Commitizen dengan menjalankan perintah berikut:
+install Commitizen by running the following command:
 
 ```bash
 npm install --save-dev commitizen @commitlint/cz-commitlint

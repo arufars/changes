@@ -32,8 +32,7 @@
     },
     "github": {
       "release": true,
-      "releaseName": "v${version}",
-      "tokenRef": "GITHUB_TOKEN"
+      "releaseName": "v${version}"
     },
     "npm": {
       "publish": false

@@ -1,5 +1,12 @@
 
 
+### [0.1.2](https://github.com/arufars/changes/compare/0.1.1...0.1.2) (2023-05-01)
+
+
+### 🐛 Bug Fixes
+
+* config package ([db2d9b2](https://github.com/arufars/changes/commit/db2d9b2e4959ca79d6720ac1b3efdf0e8d64cc92))
+
 ### [0.1.1](https://github.com/arufars/changes/compare/0.1.0...0.1.1) (2023-03-01)
 
 

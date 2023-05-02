@@ -93,9 +93,11 @@ process.chdir(path.join(__dirname, ".."));
 4. Create file `.github/workflows/release.yml`:
 
 ```yml
-name: Publish
+name: release
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - "main"
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -104,8 +106,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  publish:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -129,6 +130,69 @@ jobs:
           publish: pnpm release
         env:
           GITHUB_TOKEN: ${{ secrets.MIKA_TOKEN }}
+```
+
+5. Create file `.github/workflows/publish.yml`:
+```yml
+name: Publish package nodejs
+
+on:
+  workflow_run:
+    workflows: ["release"]
+    types: [completed]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+          registry-url: "https://registry.npmjs.org/"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - run: npm publish --access=public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_SECRET }}
+
+```
+
+6. CI `github/workflows/publish.yml`:
+
+```yml
+name: CI
+on:
+  push:
+    branches:
+      - "main"
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: "pnpm"
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run lint
+
 ```
 
 Happy releasing!

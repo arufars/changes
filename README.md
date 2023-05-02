@@ -1,5 +1,7 @@
 # 🚀 Automated Changelog and Release with Github Release
 
+- Alternative use [changeset](./docs/changeset.md)
+
 ## 📖 Introduction
 
 This repository provides the configuration for `Automated Changelog and Release with Github Release` using tools like `commitlin`t, `commitizen`, and `release-it` to make software version management and changelog creation easier and automated.

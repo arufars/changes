@@ -6,12 +6,12 @@ This GitHub Action helps you manage the process of releasing changes to your npm
 
 1. Install the package:
 
-   ```bash
-   pnpm add -D @changesets/cli @actions/exec
+```bash
+pnpm add -D @changesets/cli @actions/exec
 
-   ```
+```
 
-2. Create the `scripts` folder and add the `release.js` and `bump.js` files:
+2. Create the `scripts` folder and add the `release.js` and `version.js` files:
 
 ```js
 // scripts/release.js
@@ -115,9 +115,9 @@ async function updateVersion() {
 3. Add the following to `package.json`:
 ```json
   "scripts": {
-    "release-v2": "node scripts/release.js",
-    "bump": "node scripts/bump.js",
-    "release": "pnpm bump && pnpm release-v2"
+    "release": "node scripts/release.js",
+    "version": "node scripts/version.js",
+    "publish": "pnpm version && pnpm release"
   },
 ```
 
@@ -158,12 +158,12 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm release
+          publish: pnpm publish
         env:
           GITHUB_TOKEN: ${{ secrets.MIKA_TOKEN }}
 ```
 
-5. Create file `.github/workflows/publish.yml`:
+5. Create file `.github/workflows/publish-package.yml`:
 ```yml
 name: Publish package nodejs
 
@@ -193,7 +193,7 @@ jobs:
 
 ```
 
-6. CI `github/workflows/publish.yml`:
+6. CI `github/workflows/main.yml`:
 
 ```yml
 name: CI

@@ -112,6 +112,15 @@ async function updateVersion() {
 
 ```
 
+3. Add the following to `package.json`:
+```json
+  "scripts": {
+    "release-v2": "node scripts/release.js",
+    "bump": "node scripts/bump.js",
+    "release": "pnpm bump && pnpm release-v2"
+  },
+```
+
 4. Create file `.github/workflows/release.yml`:
 
 ```yml

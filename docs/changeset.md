@@ -6,12 +6,12 @@ This GitHub Action helps you manage the process of releasing changes to your npm
 
 1. Install the package:
 
-   ```bash
-   pnpm add -D @changesets/cli @actions/exec
+```bash
+pnpm add -D @changesets/cli @actions/exec
 
-   ```
+```
 
-2. Create the `scripts` folder and add the `release.js` and `bump.js` files:
+2. Create the `scripts` folder and add the `release.js` and `version.js` files:
 
 ```js
 // scripts/release.js
@@ -23,70 +23,101 @@ const { version } = require("../package.json");
 const tag = `v${version}`;
 const releaseLine = `v${version.split(".")[0]}`;
 
-process.chdir(path.join(__dirname, ".."));
+async function checkVersionPublished() {
+  try {
+    process.chdir(path.join(__dirname, ".."));
+    const { exitCode, stderr } = await getExecOutput(
+      `git`,
+      ["ls-remote", "--exit-code", "origin", "--tags", `refs/tags/${tag}`],
+      {
+        ignoreReturnCode: true,
+      }
+    );
+    if (exitCode === 0) {
+      console.log(`Action is not being published because version ${tag} is already published`);
+      return true;
+    }
+    if (exitCode !== 2) {
+      throw new Error(`git ls-remote exited with ${exitCode}:\n${stderr}`);
+    }
+    return false;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
+
+async function publish() {
+  try {
+    process.chdir(path.join(__dirname, ".."));
+    await exec("git", ["checkout", "--detach"]);
+    await exec("git", ["add", "--force", "dist"]);
+    await exec("git", ["commit", "-m", tag]);
+    await exec("changeset", ["tag"]);
+    await exec("git", [
+      "push",
+      "--force",
+      "--follow-tags",
+      "origin",
+      `HEAD:refs/heads/${releaseLine}`,
+    ]);
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 (async () => {
-  const { exitCode, stderr } = await getExecOutput(
-    `git`,
-    ["ls-remote", "--exit-code", "origin", "--tags", `refs/tags/${tag}`],
-    {
-      ignoreReturnCode: true,
-    }
-  );
-  if (exitCode === 0) {
-    console.log(`Action is not being published because version ${tag} is already published`);
-    return;
+  if (!(await checkVersionPublished())) {
+    await publish();
   }
-  if (exitCode !== 2) {
-    throw new Error(`git ls-remote exited with ${exitCode}:\n${stderr}`);
-  }
-
-  await exec("git", ["checkout", "--detach"]);
-  await exec("git", ["add", "--force", "dist"]);
-  await exec("git", ["commit", "-m", tag]);
-
-  await exec("changeset", ["tag"]);
-
-  await exec("git", [
-    "push",
-    "--force",
-    "--follow-tags",
-    "origin",
-    `HEAD:refs/heads/${releaseLine}`,
-  ]);
 })();
+
 ```
 
 ```js
-// scripts/bump.js
+// scripts/version.js
 const fs = require("fs");
 const path = require("path");
 const { exec } = require("@actions/exec");
 
-process.chdir(path.join(__dirname, ".."));
+async function updateReadme() {
+  try {
+    const { version } = require("../package.json");
+    const releaseLine = `v${version.split(".")[0]}`;
+    const readmePath = path.join(__dirname, "..", "README.md");
+    const content = fs.readFileSync(readmePath, "utf8");
+    const updatedContent = content.replace(
+      /changesets\/action@[^\s]+/g,
+      `changesets/action@${releaseLine}`
+    );
+    fs.writeFileSync(readmePath, updatedContent);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function updateVersion() {
+  try {
+    process.chdir(path.join(__dirname, ".."));
+    await exec("changeset", ["version"]);
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 (async () => {
-  await exec("changeset", ["version"]);
-
-  const releaseLine = `v${require("../package.json").version.split(".")[0]}`;
-
-  const readmePath = path.join(__dirname, "..", "README.md");
-  const content = fs.readFileSync(readmePath, "utf8");
-  const updatedContent = content.replace(
-    /changesets\/action@[^\s]+/g,
-    `changesets/action@${releaseLine}`
-  );
-  fs.writeFileSync(readmePath, updatedContent);
+  await updateVersion();
+  await updateReadme();
 })();
+
 ```
 
 3. Add the following to `package.json`:
-
 ```json
   "scripts": {
-    "release-v2": "node scripts/release.js",
-    "bump": "node scripts/bump.js",
-    "release": "pnpm bump && pnpm release-v2"
+    "release": "node scripts/release.js",
+    "version": "node scripts/version.js",
+    "publish": "pnpm version && pnpm release"
   },
 ```
 
@@ -127,12 +158,12 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm release
+          publish: pnpm publish
         env:
           GITHUB_TOKEN: ${{ secrets.MIKA_TOKEN }}
 ```
 
-5. Create file `.github/workflows/publish.yml`:
+5. Create file `.github/workflows/publish-package.yml`:
 ```yml
 name: Publish package nodejs
 
@@ -162,7 +193,7 @@ jobs:
 
 ```
 
-6. CI `github/workflows/publish.yml`:
+6. CI `github/workflows/main.yml`:
 
 ```yml
 name: CI
